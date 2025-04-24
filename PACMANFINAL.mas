@@ -1,0 +1,1901 @@
+Main, 	HEX 000
+
+		JnS NumerosAleatorios
+		JnS PantallaInical
+		JnS Inicializar
+		Jns GuardarPosicionesIniciales
+
+		Jump TurnosPacman
+
+//Esta activo el esteroide
+BoolActivoEsteroide, DEC 0
+DuracionEsteroide,   DEC 5 //Si quieres modificar la duracion del esteroide es aqui
+CountDuracionEsteroide, DEC 0
+
+
+//Vidas del Pacman
+Vidas,               DEC 3
+
+//Variables para el puntaje
+BolitasComidas, 	DEC 0
+Puntaje,       		DEC 0
+CantidadDeBolitas, 	DEC 0
+
+//Variable Para el movimiento Pacman
+NuevoX,			DEC 0
+NuevoY,		 	DEC 0
+
+//Variables para el movimiento del fantasma
+NuevoXFantasma,   DEC 0
+NuevoYFantasma,   DEC 0
+
+//Variables para el caclulo de Direcion dado XY
+ObtenerX,       DEC 0           / Coordenada X (columna)
+ObtenerY,       DEC 0           / Coordenada Y (fila)
+Direccion,      HEX 0           / Resultado final	
+
+//
+TempX,			DEC 0
+TempY,          DEC 0
+CountTemp,		DEC 0
+
+//Variables para la multiplicacion
+Multiplicando,					Dec 0
+Multiplicador,  				Dec 0
+Producto,						Dec 0
+CountMultiplicacion,			Dec 0
+
+//ColoresDeLosPersonajes
+ColorPacman, 	HEX 7FE0
+ColorBlinky, 	HEX 7C00
+ColorPinky,  	HEX 7EFB
+ColorInky,   	HEX 03FB
+ColorClyde,  	HEX 7EF1
+
+ColorFondo,  	HEX 0000
+Pared,  		HEX 421B
+ColorBolita,    HEX 7FFF   
+ColorEsteroide, HEX 7E60
+
+//Para pintar debajo de cada fantasmita
+ColorDebajoBlinky, HEX 000
+ColorDebajoPinky,  HEX 000
+ColorDebajoInky,   HEX 000
+ColorDebajoClyde,  HEX 000
+
+
+PosInicialPacmanX, DEC 0
+PosInicialPacmanY, DEC 0
+PosInicialBlinkyX, DEC 0
+PosInicialBlinkyY, DEC 0
+PosInicialPinkyX,  DEC 0
+PosInicialPinkyY,  DEC 0
+PosInicialInkyX,   DEC 0
+PosInicialInkyY,   DEC 0
+PosInicialClydeX,  DEC 0
+PosInicialClydeY,  DEC 0
+
+
+//PosicionesDeLosPersonajes
+PosPacmanX, DEC 0
+PosPacmanY, DEC 0
+PosBlinkyX, DEC 0
+PosBlinkyY, DEC 0
+PosPinkyX,  DEC 0
+PosPinkyY,  DEC 0
+PosInkyX,   DEC 0
+PosInkyY,   DEC 0
+PosClydeX,  DEC 0
+PosClydeY,  DEC 0
+
+//Variables 
+InicioDisplay,			HEX	F00
+TamanoDispley,  		DEC 256 
+
+//Numeros
+Cero,                   DEC 0
+Uno,              		DEC 1
+Dos,					DEC 2
+Tres,        			DEC 3
+Diez,					DEC 10
+Once, 					DEC 11
+Quince,					DEC 15
+Dieciseis,      		DEC 16
+Dieciciete,             DEC 17
+Cien,					DEC 100
+
+//# en el que incia en la lista aleatorio (modificable)
+IndexAdicional_Blinky,  DEC 95
+IndexAdicional_Pinky,  DEC 10
+IndexAdicional_Inky,  DEC 15
+IndexAdicional_Clyde,  DEC 20
+
+//Variables Variables (no tocar >:()
+IndexNAleatorios,       DEC 0
+IndexNAleatoriosFin,    DEC 0
+IndexNA_Blinky,   		DEC 0
+IndexNA_Pinky,    		DEC 0
+IndexNA_Inky,     		DEC 0
+IndexNA_Clyde,    		DEC 0
+IndexPantallaInicial, 	DEC 0
+Index,					HEX 000
+Count, 					DEC 0
+Color, 					HEX 000
+
+TurnosPacman,   Load BoolActivoEsteroide
+				SkipCond 400
+				Jump IniciarEsteroide
+				Jump Iniciar
+
+	Iniciar,	JnS VerificarVictoria
+					JnS MoverFantasmasAleatorio
+		            JnS PintarFantasmas
+					JnS VerificarColisionesConPacman
+					JnS MoverPacmanAleatorio
+					JnS VerificarColisionesConPacman
+			
+					Jump TurnosPacman
+
+	
+	IniciarEsteroide,JnS VerificarVictoria
+					JnS MoverFantasmasAleatorio
+		            JnS PintarFantasmas
+					JnS VerificarColisionesConPacmanConEsteroide
+					JnS PintarFantasmas
+					JnS MoverPacmanAleatorio
+					JnS VerificarColisionesConPacmanConEsteroide
+					JnS PintarFantasmas
+
+					Load CountDuracionEsteroide
+					Add Uno
+					Store CountDuracionEsteroide
+
+					Load DuracionEsteroide
+					Subt CountDuracionEsteroide
+					SkipCond 400
+					Jump IniciarEsteroide
+					Load Cero
+					Store BoolActivoEsteroide
+					Store CountDuracionEsteroide
+			
+					Jump TurnosPacman
+
+VerificarVictoria, HEX 000
+					Load Vidas
+					SkipCond 0C00
+					Jump End
+					Load BolitasComidas
+                  	Subt CantidadDeBolitas
+                  	SkipCond 400
+                  	JumpI VerificarVictoria   / No ha ganado aún
+                  	Jump End                      / Victoria
+
+MoverFantasmasAleatorio, 	HEX 000
+							JnS MoverBlinky
+							JnS MoverClyde
+							JnS MoverInky
+							JnS MoverPinky
+							
+					    	JumpI MoverFantasmasAleatorio
+
+PintarFantasmas, HEX 000
+        / Blinky
+        Load PosBlinkyX
+        Store ObtenerX
+        Load PosBlinkyY
+        Store ObtenerY
+        JnS CalcularDireccion
+        Load ColorBlinky
+        StoreI Direccion
+
+        / Pinky
+        Load PosPinkyX
+        Store ObtenerX
+        Load PosPinkyY
+        Store ObtenerY
+        JnS CalcularDireccion
+        Load ColorPinky
+        StoreI Direccion
+
+        / Inky
+        Load PosInkyX
+        Store ObtenerX
+        Load PosInkyY
+        Store ObtenerY
+        JnS CalcularDireccion
+        Load ColorInky
+        StoreI Direccion
+
+        / Clyde
+        Load PosClydeX
+        Store ObtenerX
+        Load PosClydeY
+        Store ObtenerY
+        JnS CalcularDireccion
+        Load ColorClyde
+        StoreI Direccion
+
+        JumpI PintarFantasmas
+
+
+//Funcion Guardar las posiciones inciales
+GuardarPosicionesIniciales,		HEX 000
+						Load PosPacmanX
+						Store PosInicialPacmanX
+						Load PosPacmanY
+						Store PosInicialPacmanY
+
+						Load PosBlinkyX
+						Store PosInicialBlinkyX
+						Load PosBlinkyY
+						Store PosInicialBlinkyY
+
+						Load PosPinkyX
+						Store PosInicialPinkyX
+						Load PosPinkyY
+						Store PosInicialPinkyY
+
+						Load PosInkyX
+						Store PosInicialInkyX
+						Load PosInkyY
+						Store PosInicialInkyY
+
+						Load PosClydeX
+						Store PosInicialClydeX
+						Load PosClydeY
+						Store PosInicialClydeY
+
+						JumpI GuardarPosicionesIniciales
+
+//Funcion que recorre el Screen y pinta con los colores de la pantalla inicial
+Inicializar,	HEX 000
+
+				Load IndexNAleatorios
+				Add IndexAdicional_Blinky
+				Store IndexNA_Blinky
+
+				Load IndexNAleatorios
+				Add IndexAdicional_Clyde
+				Store IndexNA_Clyde
+
+				Load IndexNAleatorios
+				Add IndexAdicional_Pinky
+				Store IndexNA_Pinky
+
+				Load IndexNAleatorios
+				Add IndexAdicional_Inky
+				Store IndexNA_Inky
+							
+				Load IndexNAleatorios
+				Add Cien
+				Store	IndexNAleatoriosFin
+				
+				Load      	InicioDisplay
+				Store      	Index
+
+Cond,			Load 		Count
+				Subt 		TamanoDispley
+				SkipCond	000     / AC = 0
+				JumpI 		Inicializar
+
+				JnS        CondPantallaInical
+
+				Load 		Color
+				StoreI 		Index
+
+				JnS        DetectarPosicones
+
+				Load 		Index
+				Add 		Uno
+				Store 		Index
+
+				Load 		Count  
+				Add 		Uno
+				Store  	 	Count
+
+				Jump  		Cond
+
+//Funcion fin del programa
+End, 		Load        InicioDisplay
+			Store       Index
+			Load        Cero
+			Store       Color
+			Halt
+
+//Funcion para recorrer el arreglo que contiene la pantalla inicial y pasar el color al inicializador
+CondPantallaInical,		HEX 000
+						LOADI		IndexPantallaInicial
+						Store       Color
+						LOAD		IndexPantallaInicial
+						ADD			Uno
+						STORE		IndexPantallaInicial
+						JUMPI		CondPantallaInical	
+
+//Funcion que carga la pantalla inicial
+NumerosAleatorios,	HEX 000
+			JnS ListadeNumerosAleatorios
+
+ListadeNumerosAleatorios, HEX 000
+			Load ListadeNumerosAleatorios
+			Subt Dos
+			Store ListadeNumerosAleatorios
+			Clear
+			Load ListadeNumerosAleatorios
+			Add Once
+			Store IndexNAleatorios
+			JumpI NumerosAleatorios
+
+//Lista de numero Aleatorios
+DEC 3
+DEC 3
+DEC 3
+DEC 3
+DEC 3
+DEC 3
+DEC 1
+DEC 4
+DEC 4
+DEC 1
+DEC 2
+DEC 2
+DEC 3
+DEC 1
+DEC 4
+DEC 4
+DEC 1
+DEC 4
+DEC 2
+DEC 4
+DEC 1
+DEC 1
+DEC 1
+DEC 2
+DEC 4
+DEC 1
+DEC 1
+DEC 4
+DEC 2
+DEC 2
+DEC 2
+DEC 1
+DEC 3
+DEC 4
+DEC 4
+DEC 4
+DEC 4
+DEC 3
+DEC 3
+DEC 2
+DEC 1
+DEC 4
+DEC 2
+DEC 2
+DEC 2
+DEC 2
+DEC 1
+DEC 1
+DEC 4
+DEC 3
+DEC 1
+DEC 2
+DEC 3
+DEC 3
+DEC 1
+DEC 4
+DEC 3
+DEC 2
+DEC 2
+DEC 3
+DEC 2
+DEC 3
+DEC 2
+DEC 2
+DEC 1
+DEC 3
+DEC 2
+DEC 1
+DEC 4
+DEC 4
+DEC 3
+DEC 3
+DEC 2
+DEC 2
+DEC 3
+DEC 2
+DEC 3
+DEC 2
+DEC 2
+DEC 4
+DEC 2
+DEC 4
+DEC 4
+DEC 4
+DEC 3
+DEC 2
+DEC 2
+DEC 4
+DEC 4
+DEC 2
+DEC 4
+DEC 3
+DEC 4
+DEC 3
+DEC 1
+DEC 1
+DEC 4
+DEC 4
+DEC 3
+DEC 2
+						
+//Funcion que carga la pantalla inicial
+PantallaInical,	HEX 000
+			JnS CargarPantalla
+
+CargarPantalla, HEX 000
+			Load CargarPantalla
+			Subt Dos
+			Store CargarPantalla
+			Clear
+			Load CargarPantalla
+			Add Once
+			Store IndexPantallaInicial
+			JumpI PantallaInical
+
+//Matriz de la pantalla inicial (Display 16x16)
+/row: #1
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+/row: #2
+HEX 421B
+HEX 7E60
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7E60
+HEX 421B
+/row: #3
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #4
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 7FE0
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 0000
+HEX 7E60
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #5
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #6
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #7
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+/row: #8
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 7C00
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 7EF1
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+/row: #9
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 7EFB
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 03FB
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+/row: #10
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+/row: #11
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #12
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #13
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 7E60
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 0000
+HEX 7E60
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #14
+HEX 421B
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 421B
+/row: #15
+HEX 421B
+HEX 7E60
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7FFF
+HEX 0000
+HEX 7E60
+HEX 421B
+/row: #16
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 0000
+HEX 0000
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+HEX 421B
+
+
+DetectarPosicones, 		HEX 000
+						JnS DetectarPacman
+						JnS DetectarBlinky
+						Jns DetectarClyde
+						JnS DetectarInky
+						JnS DetectarPinky
+
+						JnS     DetectarBolitas  // Saber cuantas bolas hay en el tablero
+						
+						JumpI DetectarPosicones
+
+		DetectarBolitas, HEX 000
+        Load Color
+        Subt ColorBolita
+        SkipCond 400
+        JumpI DetectarBolitas       / Si no es bolita, salir
+
+        / Si es bolita, incrementar contador
+        Load CantidadDeBolitas
+        Add Uno
+        Store CantidadDeBolitas
+
+        JumpI DetectarBolitas
+
+
+		DetectarPacman, HEX 000
+						Load ColorPacman
+						Subt Color
+						SkipCond 400
+						JumpI DetectarPacman
+						JnS ObtenerCordenadas
+						Load TempX
+						Store PosPacmanX
+						Load TempY
+						Store PosPacmanY
+						JumpI DetectarPacman
+
+		DetectarBlinky, HEX 000
+						Load ColorBlinky
+						Subt Color
+						SkipCond 400
+						JumpI DetectarBlinky
+						JnS ObtenerCordenadas
+						Load TempX
+						Store PosBlinkyX
+						Load TempY
+						Store PosBlinkyY
+						JumpI DetectarBlinky
+
+		DetectarClyde,	HEX 000
+						Load ColorClyde
+						Subt Color
+						SkipCond 400
+						JumpI DetectarClyde
+						JnS ObtenerCordenadas
+						Load TempX
+						Store PosClydeX
+						Load TempY
+						Store PosClydeY
+						JumpI DetectarClyde
+
+		DetectarInky,	HEX 000
+						Load ColorInky
+						Subt Color
+						SkipCond 400
+						JumpI DetectarInky
+						JnS ObtenerCordenadas
+						Load TempX
+						Store PosInkyX
+						Load TempY
+						Store PosInkyY
+						JumpI DetectarInky
+
+		DetectarPinky,	HEX 000
+						Load ColorPinky
+						Subt Color
+						SkipCond 400
+						JumpI DetectarPinky
+						JnS ObtenerCordenadas
+						Load TempX
+						Store PosPinkyX
+						Load TempY
+						Store PosPinkyY
+						JumpI DetectarPinky
+						
+
+
+ObtenerCordenadas,	HEX 000
+
+					Load Cero
+					Store TempY
+					Store TempX
+
+					Load Count
+					Store CountTemp
+					Subt Quince
+					SkipCond 800 
+					Jump CasoEspecial
+
+		LoopDiv,	Load CountTemp
+					Subt Quince
+					SkipCond 800
+					Jump FinDivision
+
+					Load CountTemp
+					Subt Quince
+					Subt Uno
+					Store CountTemp
+		
+					Load TempY
+					Add Uno
+					Store TempY
+		
+					Jump LoopDiv
+
+		CasoEspecial, Load CountTemp
+					  Store TempX
+					  JumpI ObtenerCordenadas
+		
+		FinDivision,	Load CountTemp
+						Store TempX
+						JumpI ObtenerCordenadas
+
+//Funciones para multiplicar
+
+Multipicacion, 	HEX 	000
+
+				Load Cero
+				Store Producto
+
+
+		Multi,	Load 	CountMultiplicacion
+				Subt 	Multiplicador
+				SkipCond 000
+				Jump 	EndMultiplicacion
+
+				Load 	CountMultiplicacion  /Contador
+				Add 	Uno
+				Store   CountMultiplicacion
+				
+				Load 	Producto
+				Add		Multiplicando
+				Store   Producto
+				
+				Jump    Multi
+
+	EndMultiplicacion, Load Cero
+						Store Multiplicador
+						Store Multiplicando
+						Store CountMultiplicacion
+						JumpI 	Multipicacion
+
+//Funcion para Calclar la direccion dada Y y X en le display
+//F00 + (Y * 16) + X
+
+CalcularDireccion, HEX 000
+
+        Load ObtenerY
+        Store Multiplicador     / Y es el número de veces
+        Load Dieciseis
+        Store Multiplicando     / 16 es lo que se suma
+        JnS Multipicacion       / Resultado en Producto
+
+        Load Producto
+        Add ObtenerX
+		Add InicioDisplay
+        Store Direccion
+
+		Load Cero
+		Store ObtenerX
+		Store ObtenerY
+
+
+        JumpI CalcularDireccion
+
+
+MoverPacmanAleatorio, HEX 000
+
+	//Mantener el puntero dentro de los 100 numeros aleatorios
+	Load IndexNAleatoriosFin
+	Subt IndexNAleatorios
+	SkipCond 400
+	Jump MAntenerValorIndexPAcaman
+	Load IndexNAleatorios
+	Subt Cien
+	Store IndexNAleatorios
+	
+    / Obtener valor aleatorio actual             
+MAntenerValorIndexPAcaman,   LoadI IndexNAleatorios
+    Store Direccion           / Usamos "Direccion" como "ValorAleatorio"
+
+    / Incrementar indice para la siguiente vez
+	Load IndexNAleatorios
+    Add Uno
+    Store IndexNAleatorios
+
+    / Cargar posición actual
+    Load PosPacmanX
+    Store NuevoX
+    Load PosPacmanY
+    Store NuevoY
+
+    / Movimiento según valor
+    Load Direccion
+    Subt Uno
+    SkipCond 0C00
+    Jump MoverArriba
+
+    Load Direccion
+    Subt Dos
+    SkipCond 0C00
+    Jump MoverDerecha
+
+    Load Direccion
+    Subt Tres
+    SkipCond 0C00
+    Jump MoverAbajo
+
+    Jump MoverIzquierda
+
+
+MoverArriba,	Load NuevoY
+			    Subt Uno
+			    SkipCond 000        / Si Y - 1 < 0 → teletransportar
+			    Jump MoverArriba_OK
+			
+			    Load Quince         / Y ← 15
+			    Store NuevoY
+			    Jump PintarPacman
+
+	MoverArriba_OK,	Load NuevoY
+				    Subt Uno
+				    Store NuevoY
+				    Jump PintarPacman
+
+MoverDerecha,	Load NuevoX
+			    Add Uno
+				Subt Dieciseis
+			    SkipCond 400
+			    Jump MoverDerecha_OK
+
+			    Load Cero   
+			    Store NuevoX
+			    Jump PintarPacman
+
+	MoverDerecha_OK,Load NuevoX
+				    Add Uno
+				    Store NuevoX
+				    Jump PintarPacman
+					
+MoverAbajo,			Load NuevoY
+				    Add Uno
+				    Subt Dieciseis
+				    SkipCond 400        / Si Y + 1 == 16 → teletransportar
+				    Jump MoverAbajo_OK
+				
+				    Load Cero           / Y ← 0
+				    Store NuevoY
+				    Jump PintarPacman
+
+		MoverAbajo_OK,	Load NuevoY
+					    Add Uno
+					    Store NuevoY
+					    Jump PintarPacman
+
+MoverIzquierda,	Load NuevoX
+			    Subt Uno
+			    SkipCond 000        
+			    Jump MoverIzquierda_OK
+			
+			    Load Quince        
+			    Store NuevoX
+			    Jump PintarPacman
+	
+	MoverIzquierda_OK,	Load NuevoX
+						Subt Uno
+					    Store NuevoX
+					    Jump PintarPacman
+
+				//Verificar si hay pared
+PintarPacman,	Load NuevoX
+			    Store ObtenerX
+			    Load NuevoY
+			    Store ObtenerY
+			    JnS CalcularDireccion
+
+
+
+	VerificarBolita, 	LoadI Direccion
+				    	Subt ColorBolita
+				        SkipCond 400
+				        Jump VerificarEsteroide
+				        Jump ComerBolita
+
+		ComerBolita,    Load Vidas
+						Output
+						Load Puntaje
+				        Add Uno
+				        Store Puntaje
+						Output
+						Load BolitasComidas
+						Add Uno
+						Store BolitasComidas
+				        Jump VerificarEsteroide
+
+		VerificarEsteroide, 	LoadI Direccion
+				    	Subt ColorEsteroide
+				        SkipCond 400
+				        Jump VerificarPared
+				        Jump ComerEsteroide
+
+		ComerEsteroide, Load Uno
+						Store BoolActivoEsteroide
+						
+				        Jump VerificarPared
+
+				
+		VerificarPared,    	LoadI Direccion           / Cargar color en la celda destino
+			    			Subt Pared                / Pared = 421B
+			    			SkipCond 400            / Si ColorDestino - Pared = 0 (es pared), saltar mover
+			    			Jump NoEsPared
+							Jump EsPared
+			
+			   	/Borrar la posicio actual
+	NoEsPared, Load PosPacmanX
+			    Store ObtenerX
+			    Load PosPacmanY
+			    Store ObtenerY
+			    JnS CalcularDireccion
+			    Load ColorFondo
+			    StoreI Direccion
+				
+				/ Pintar en nueva posición
+			    Load NuevoX
+			    Store PosPacmanX
+				Store ObtenerX
+			    Load NuevoY
+			    Store PosPacmanY
+				Store ObtenerY
+			    JnS CalcularDireccion
+			    Load ColorPacman
+			    StoreI Direccion
+			
+			    JumpI MoverPacmanAleatorio
+
+	EsPared, 	JumpI MoverPacmanAleatorio
+
+	
+
+
+		MoverBlinky, 		HEX 000
+
+			//Mantener el puntero dentro de los 100 numeros aleatorios
+	Load IndexNAleatoriosFin
+	Subt IndexNA_Blinky
+	SkipCond 400
+	Jump MAntenerValorIndexBlinky
+	Load IndexNA_Blinky
+	Subt Cien
+	Store IndexNA_Blinky
+	
+
+							/ Obtener valor aleatorio actual 
+	MAntenerValorIndexBlinky, LoadI IndexNA_Blinky
+						    Store Direccion           / Usamos "Direccion" como "ValorAleatorio"
+
+						    / Incrementar indice para la siguiente vez
+							Load IndexNA_Blinky
+						    Add Uno
+						    Store IndexNA_Blinky
+							
+						    / Cargar posición actual Blinky
+						    Load PosBlinkyX
+						    Store NuevoX
+						    Load PosBlinkyY
+						    Store NuevoY
+
+						    / Movimiento según valor
+						    Load Direccion
+						    Subt Uno
+						    SkipCond 0C00
+						    Jump MoverArriba_Blinky
+
+						    Load Direccion
+						    Subt Dos
+						    SkipCond 0C00
+						    Jump MoverDerecha_Blinky
+
+						    Load Direccion
+						    Subt Tres
+						    SkipCond 0C00
+						    Jump MoverAbajo_Blinky
+
+						    Jump MoverIzquierda_Blinky
+
+
+						MoverArriba_Blinky,		Load NuevoY
+											    Subt Uno
+											    SkipCond 000        / Si Y - 1 < 0 → teletransportar
+											    Jump MoverArriba_OK_Blinky
+										
+											    Load Quince         / Y ← 15
+											    Store NuevoY
+											    Jump PintarBlinky
+
+												MoverArriba_OK_Blinky,	Load NuevoY
+															    		Subt Uno
+															    		Store NuevoY
+															   			Jump PintarBlinky
+
+						MoverDerecha_Blinky,	Load NuevoX
+											    Add Uno
+												Subt Dieciseis
+											    SkipCond 400
+											    Jump MoverDerecha_OK_Blinky
+								
+											    Load Cero   
+											    Store NuevoX
+											    Jump PintarBlinky
+							
+											MoverDerecha_OK_Blinky,	Load NuevoX
+																    Add Uno
+																    Store NuevoX
+																    Jump PintarBlinky
+					
+						MoverAbajo_Blinky,		Load NuevoY
+											    Add Uno
+											    Subt Dieciseis
+											    SkipCond 400        / Si Y + 1 == 16 → teletransportar
+											    Jump MoverAbajo_OK_Blinky
+				
+											    Load Cero           / Y ← 0
+											    Store NuevoY
+											    Jump PintarBlinky
+
+											MoverAbajo_OK_Blinky,	Load NuevoY
+																    Add Uno
+																    Store NuevoY
+																    Jump PintarBlinky
+
+					MoverIzquierda_Blinky,		Load NuevoX
+											    Subt Uno
+											    SkipCond 000        
+											    Jump MoverIzquierda_OK_Blinky
+											
+											    Load Quince        
+											    Store NuevoX
+											    Jump PintarBlinky
+								
+									MoverIzquierda_OK_Blinky,		Load NuevoX
+																	Subt Uno
+																    Store NuevoX
+																    Jump PintarBlinky
+
+								//Verificar si hay pared
+				PintarBlinky,	Load NuevoX
+							    Store ObtenerX
+							    Load NuevoY
+							    Store ObtenerY
+							    JnS CalcularDireccion
+
+
+
+				
+		VerificarPared_Blinky,    			LoadI Direccion           / Cargar color en la celda destino
+							    			Subt Pared                / Pared = 421B
+							    			SkipCond 400            / Si ColorDestino - Pared = 0 (es pared), saltar mover
+							    			Jump NoEsPared_Blinky
+											Jump EsPared_Blinky
+			
+				/Borrar la posicio actual
+				NoEsPared_Blinky, 			Load PosBlinkyX
+										    Store ObtenerX
+										    Load PosBlinkyY
+										    Store ObtenerY
+										    JnS CalcularDireccion
+										    Load ColorDebajoBlinky 
+										    StoreI Direccion
+											
+											/ Pintar en nueva posición
+										    Load NuevoX
+										    Store PosBlinkyX
+											Store ObtenerX
+										    Load NuevoY
+										    Store PosBlinkyY
+											Store ObtenerY
+										    JnS CalcularDireccion
+
+											/ Verificar si debe guardar el color debajo de Blinky
+											VerificarGuardarColor,  LoadI Direccion
+																	 Subt ColorBolita
+																	 SkipCond 400
+																	 Jump VerificarEsteroideBlinky
+																	 Jump GuardarColorBolitaBlinky
+
+											GuardarColorBolitaBlinky, Load ColorBolita
+																	   Store ColorDebajoBlinky
+																	   Jump ContinuarPintadoBlinky
+										
+											VerificarEsteroideBlinky, LoadI Direccion
+																	   Subt ColorEsteroide
+																	   SkipCond 400
+																	   Jump GuardarColorFondoBlinky
+																	   Jump GuardarColorEsteroideBlinky
+
+											GuardarColorEsteroideBlinky, Load ColorEsteroide
+																	   Store ColorDebajoBlinky
+																	   Jump ContinuarPintadoBlinky
+										
+											GuardarColorFondoBlinky, Load ColorFondo
+																	  Store ColorDebajoBlinky
+																	  Jump ContinuarPintadoBlinky
+										
+											ContinuarPintadoBlinky,   Load ColorBlinky
+																	  StoreI Direccion
+
+				EsPared_Blinky, 			JumpI MoverBlinky
+
+MoverPinky, 		HEX 000
+
+			/ Mantener el puntero dentro de los 100 números aleatorios
+			Load IndexNAleatoriosFin
+			Subt IndexNA_Pinky
+			SkipCond 400
+			Jump MAntenerValorIndexPinky
+			Load IndexNA_Pinky
+			Subt Cien
+			Store IndexNA_Pinky
+
+	MAntenerValorIndexPinky,	LoadI IndexNA_Pinky
+								Store Direccion
+								/ Incrementar índice para la siguiente vez
+								Load IndexNA_Pinky
+								Add Uno
+								Store IndexNA_Pinky
+
+							
+						    Load PosPinkyX
+						    Store NuevoX
+						    Load PosPinkyY
+						    Store NuevoY
+
+						    Load Direccion
+						    Subt Uno
+						    SkipCond 0C00
+						    Jump MoverArriba_Pinky
+
+						    Load Direccion
+						    Subt Dos
+						    SkipCond 0C00
+						    Jump MoverDerecha_Pinky
+
+						    Load Direccion
+						    Subt Tres
+						    SkipCond 0C00
+						    Jump MoverAbajo_Pinky
+
+						    Jump MoverIzquierda_Pinky
+
+MoverArriba_Pinky,		Load NuevoY
+					    Subt Uno
+					    SkipCond 000
+					    Jump MoverArriba_OK_Pinky
+
+					    Load Quince
+					    Store NuevoY
+					    Jump PintarPinky
+
+MoverArriba_OK_Pinky,	Load NuevoY
+					    Subt Uno
+					    Store NuevoY
+					    Jump PintarPinky
+
+MoverDerecha_Pinky,	Load NuevoX
+					    Add Uno
+					    Subt Dieciseis
+					    SkipCond 400
+					    Jump MoverDerecha_OK_Pinky
+
+					    Load Cero
+					    Store NuevoX
+					    Jump PintarPinky
+
+MoverDerecha_OK_Pinky,	Load NuevoX
+					    Add Uno
+					    Store NuevoX
+					    Jump PintarPinky
+
+MoverAbajo_Pinky,	Load NuevoY
+					    Add Uno
+					    Subt Dieciseis
+					    SkipCond 400
+					    Jump MoverAbajo_OK_Pinky
+
+					    Load Cero
+					    Store NuevoY
+					    Jump PintarPinky
+
+MoverAbajo_OK_Pinky,	Load NuevoY
+					    Add Uno
+					    Store NuevoY
+					    Jump PintarPinky
+
+MoverIzquierda_Pinky,	Load NuevoX
+					    Subt Uno
+					    SkipCond 000
+					    Jump MoverIzquierda_OK_Pinky
+
+					    Load Quince
+					    Store NuevoX
+					    Jump PintarPinky
+
+MoverIzquierda_OK_Pinky,	Load NuevoX
+						    Subt Uno
+						    Store NuevoX
+						    Jump PintarPinky
+
+PintarPinky,	Load NuevoX
+			    Store ObtenerX
+			    Load NuevoY
+			    Store ObtenerY
+			    JnS CalcularDireccion
+			    Jump VerificarPared_Pinky
+
+VerificarPared_Pinky,	LoadI Direccion
+					    Subt Pared
+					    SkipCond 400
+					    Jump NoEsPared_Pinky
+					    Jump EsPared_Pinky
+
+NoEsPared_Pinky,	Load PosPinkyX
+				    Store ObtenerX
+				    Load PosPinkyY
+				    Store ObtenerY
+				    JnS CalcularDireccion
+				    Load ColorDebajoPinky
+				    StoreI Direccion
+
+				    Load NuevoX
+				    Store PosPinkyX
+				    Store ObtenerX
+				    Load NuevoY
+				    Store PosPinkyY
+				    Store ObtenerY
+				    JnS CalcularDireccion
+
+VerificarGuardarColorP, LoadI Direccion
+						 Subt ColorBolita
+						 SkipCond 400
+						 Jump VerificarEsteroidePinky
+						 Jump GuardarColorBolitaPinky
+
+GuardarColorBolitaPinky, Load ColorBolita
+						 Store ColorDebajoPinky
+						 Jump ContinuarPintadoPinky
+
+VerificarEsteroidePinky, LoadI Direccion
+						 Subt ColorEsteroide
+						 SkipCond 400
+						 Jump GuardarColorFondoPinky
+						 Jump GuardarColorEsteroidePinky
+
+GuardarColorEsteroidePinky, Load ColorEsteroide
+						 Store ColorDebajoPinky
+						 Jump ContinuarPintadoPinky
+
+GuardarColorFondoPinky, Load ColorFondo
+						Store ColorDebajoPinky
+						Jump ContinuarPintadoPinky
+
+ContinuarPintadoPinky, Load ColorPinky
+					   StoreI Direccion
+
+EsPared_Pinky, 	JumpI MoverPinky
+
+MoverInky, 		HEX 000
+
+			/ Mantener el puntero dentro de los 100 números aleatorios
+			Load IndexNAleatoriosFin
+			Subt IndexNA_Inky
+			SkipCond 400
+			Jump MAntenerValorIndexInky
+			Load IndexNA_Inky
+			Subt Cien
+			Store IndexNA_Inky
+
+	MAntenerValorIndexInky,	LoadI IndexNA_Inky
+								Store Direccion
+								/ Incrementar índice para la siguiente vez
+								Load IndexNA_Inky
+								Add Uno
+								Store IndexNA_Inky
+
+
+						    Load PosInkyX
+						    Store NuevoX
+						    Load PosInkyY
+						    Store NuevoY
+
+						    Load Direccion
+						    Subt Uno
+						    SkipCond 0C00
+						    Jump MoverArriba_Inky
+
+						    Load Direccion
+						    Subt Dos
+						    SkipCond 0C00
+						    Jump MoverDerecha_Inky
+
+						    Load Direccion
+						    Subt Tres
+						    SkipCond 0C00
+						    Jump MoverAbajo_Inky
+
+						    Jump MoverIzquierda_Inky
+
+MoverArriba_Inky,		Load NuevoY
+					    Subt Uno
+					    SkipCond 000
+					    Jump MoverArriba_OK_Inky
+
+					    Load Quince
+					    Store NuevoY
+					    Jump PintarInky
+
+MoverArriba_OK_Inky,	Load NuevoY
+					    Subt Uno
+					    Store NuevoY
+					    Jump PintarInky
+
+MoverDerecha_Inky,	Load NuevoX
+					    Add Uno
+					    Subt Dieciseis
+					    SkipCond 400
+					    Jump MoverDerecha_OK_Inky
+
+					    Load Cero
+					    Store NuevoX
+					    Jump PintarInky
+
+MoverDerecha_OK_Inky,	Load NuevoX
+					    Add Uno
+					    Store NuevoX
+					    Jump PintarInky
+
+MoverAbajo_Inky,	Load NuevoY
+					    Add Uno
+					    Subt Dieciseis
+					    SkipCond 400
+					    Jump MoverAbajo_OK_Inky
+
+					    Load Cero
+					    Store NuevoY
+					    Jump PintarInky
+
+MoverAbajo_OK_Inky,	Load NuevoY
+					    Add Uno
+					    Store NuevoY
+					    Jump PintarInky
+
+MoverIzquierda_Inky,	Load NuevoX
+					    Subt Uno
+					    SkipCond 000
+					    Jump MoverIzquierda_OK_Inky
+
+					    Load Quince
+					    Store NuevoX
+					    Jump PintarInky
+
+MoverIzquierda_OK_Inky,	Load NuevoX
+						    Subt Uno
+						    Store NuevoX
+						    Jump PintarInky
+
+PintarInky,	Load NuevoX
+			    Store ObtenerX
+			    Load NuevoY
+			    Store ObtenerY
+			    JnS CalcularDireccion
+			    Jump VerificarPared_Inky
+
+VerificarPared_Inky,	LoadI Direccion
+					    Subt Pared
+					    SkipCond 400
+					    Jump NoEsPared_Inky
+					    Jump EsPared_Inky
+
+NoEsPared_Inky,	Load PosInkyX
+				    Store ObtenerX
+				    Load PosInkyY
+				    Store ObtenerY
+				    JnS CalcularDireccion
+				    Load ColorDebajoInky
+				    StoreI Direccion
+
+				    Load NuevoX
+				    Store PosInkyX
+				    Store ObtenerX
+				    Load NuevoY
+				    Store PosInkyY
+				    Store ObtenerY
+				    JnS CalcularDireccion
+
+VerificarGuardarColorI, LoadI Direccion
+						 Subt ColorBolita
+						 SkipCond 400
+						 Jump VerificarEsteroideInky
+						 Jump GuardarColorBolitaInky
+
+GuardarColorBolitaInky, Load ColorBolita
+						 Store ColorDebajoInky
+						 Jump ContinuarPintadoInky
+
+VerificarEsteroideInky, LoadI Direccion
+						 Subt ColorEsteroide
+						 SkipCond 400
+						 Jump GuardarColorFondoInky
+						 Jump GuardarColorEsteroideInky
+
+GuardarColorEsteroideInky, Load ColorEsteroide
+						 Store ColorDebajoInky
+						 Jump ContinuarPintadoInky
+
+GuardarColorFondoInky, Load ColorFondo
+						Store ColorDebajoInky
+						Jump ContinuarPintadoInky
+
+ContinuarPintadoInky, Load ColorInky
+					   StoreI Direccion
+
+EsPared_Inky, 	JumpI MoverInky
+
+MoverClyde, 		HEX 000
+
+			/ Mantener el puntero dentro de los 100 números aleatorios
+			Load IndexNAleatoriosFin
+			Subt IndexNA_Clyde
+			SkipCond 400
+			Jump MAntenerValorIndexClyde
+			Load IndexNA_Clyde
+			Subt Cien
+			Store IndexNA_Clyde
+
+	MAntenerValorIndexClyde,	LoadI IndexNA_Clyde
+								Store Direccion
+								/ Incrementar índice para la siguiente vez
+								Load IndexNA_Clyde
+								Add Uno
+								Store IndexNA_Clyde
+
+
+						    Load PosClydeX
+						    Store NuevoX
+						    Load PosClydeY
+						    Store NuevoY
+
+						    Load Direccion
+						    Subt Uno
+						    SkipCond 0C00
+						    Jump MoverArriba_Clyde
+
+						    Load Direccion
+						    Subt Dos
+						    SkipCond 0C00
+						    Jump MoverDerecha_Clyde
+
+						    Load Direccion
+						    Subt Tres
+						    SkipCond 0C00
+						    Jump MoverAbajo_Clyde
+
+						    Jump MoverIzquierda_Clyde
+
+MoverArriba_Clyde,		Load NuevoY
+					    Subt Uno
+					    SkipCond 000
+					    Jump MoverArriba_OK_Clyde
+
+					    Load Quince
+					    Store NuevoY
+					    Jump PintarClyde
+
+MoverArriba_OK_Clyde,	Load NuevoY
+					    Subt Uno
+					    Store NuevoY
+					    Jump PintarClyde
+
+MoverDerecha_Clyde,	Load NuevoX
+					    Add Uno
+					    Subt Dieciseis
+					    SkipCond 400
+					    Jump MoverDerecha_OK_Clyde
+
+					    Load Cero
+					    Store NuevoX
+					    Jump PintarClyde
+
+MoverDerecha_OK_Clyde,	Load NuevoX
+					    Add Uno
+					    Store NuevoX
+					    Jump PintarClyde
+
+MoverAbajo_Clyde,	Load NuevoY
+					    Add Uno
+					    Subt Dieciseis
+					    SkipCond 400
+					    Jump MoverAbajo_OK_Clyde
+
+					    Load Cero
+					    Store NuevoY
+					    Jump PintarClyde
+
+MoverAbajo_OK_Clyde,	Load NuevoY
+					    Add Uno
+					    Store NuevoY
+					    Jump PintarClyde
+
+MoverIzquierda_Clyde,	Load NuevoX
+					    Subt Uno
+					    SkipCond 000
+					    Jump MoverIzquierda_OK_Clyde
+
+					    Load Quince
+					    Store NuevoX
+					    Jump PintarClyde
+
+MoverIzquierda_OK_Clyde,	Load NuevoX
+						    Subt Uno
+						    Store NuevoX
+						    Jump PintarClyde
+
+PintarClyde,	Load NuevoX
+			    Store ObtenerX
+			    Load NuevoY
+			    Store ObtenerY
+			    JnS CalcularDireccion
+			    Jump VerificarPared_Clyde
+
+VerificarPared_Clyde,	LoadI Direccion
+					    Subt Pared
+					    SkipCond 400
+					    Jump NoEsPared_Clyde
+					    Jump EsPared_Clyde
+
+NoEsPared_Clyde,	Load PosClydeX
+				    Store ObtenerX
+				    Load PosClydeY
+				    Store ObtenerY
+				    JnS CalcularDireccion
+				    Load ColorDebajoClyde
+				    StoreI Direccion
+
+				    Load NuevoX
+				    Store PosClydeX
+				    Store ObtenerX
+				    Load NuevoY
+				    Store PosClydeY
+				    Store ObtenerY
+				    JnS CalcularDireccion
+
+VerificarGuardarColorC, LoadI Direccion
+						 Subt ColorBolita
+						 SkipCond 400
+						 Jump VerificarEsteroideClyde
+						 Jump GuardarColorBolitaClyde
+
+GuardarColorBolitaClyde, Load ColorBolita
+						 Store ColorDebajoClyde
+						 Jump ContinuarPintadoClyde
+
+VerificarEsteroideClyde, LoadI Direccion
+						 Subt ColorEsteroide
+						 SkipCond 400
+						 Jump GuardarColorFondoClyde
+						 Jump GuardarColorEsteroideClyde
+
+GuardarColorEsteroideClyde, Load ColorEsteroide
+						 Store ColorDebajoClyde
+						 Jump ContinuarPintadoClyde
+
+GuardarColorFondoClyde, Load ColorFondo
+						Store ColorDebajoClyde
+						Jump ContinuarPintadoClyde
+
+ContinuarPintadoClyde, Load ColorClyde
+					   StoreI Direccion
+
+EsPared_Clyde, 	JumpI MoverClyde
+
+
+
+VerificarColisionesConPacman,  HEX 000
+		Load ColorBlinky
+		Store Color
+        Load PosPacmanX
+        Subt PosBlinkyX
+        SkipCond 400
+        Jump VerificarPinky
+        Load PosPacmanY
+        Subt PosBlinkyY
+        SkipCond 400
+        Jump VerificarPinky
+        Jump ReiniciarPacman
+
+VerificarPinky,  Load ColorPinky
+		Store Color
+		Load PosPacmanX
+        Subt PosPinkyX
+        SkipCond 400
+        Jump VerificarInky
+        Load PosPacmanY
+        Subt PosPinkyY
+        SkipCond 400
+        Jump VerificarInky
+        Jump ReiniciarPacman
+
+VerificarInky,  Load ColorInky
+		Store Color
+		Load PosPacmanX
+		
+        Subt PosInkyX
+        SkipCond 400
+        Jump VerificarClyde
+        Load PosPacmanY
+        Subt PosInkyY
+        SkipCond 400
+        Jump VerificarClyde
+        Jump ReiniciarPacman
+
+VerificarClyde,  Load ColorClyde
+		Store Color
+		Load PosPacmanX
+        Subt PosClydeX
+        SkipCond 400
+        Jump NoColision
+        Load PosPacmanY
+        Subt PosClydeY
+        SkipCond 400
+        Jump NoColision
+        Jump ReiniciarPacman
+
+NoColision, JumpI VerificarColisionesConPacman
+
+ReiniciarPacman, Load PosPacmanX
+				Store ObtenerX
+				Load PosPacmanY
+				Store ObtenerY
+				JnS CalcularDireccion
+                Load Color
+                StoreI Direccion
+
+				Load Vidas
+                Subt Uno
+                Store Vidas
+				Output
+				Load Puntaje
+				Output
+				
+				
+				Load PosInicialPacmanX
+                Store PosPacmanX
+                Store ObtenerX
+
+                Load PosInicialPacmanY
+                Store PosPacmanY
+                Store ObtenerY
+
+                JnS CalcularDireccion
+                Load ColorPacman
+                StoreI Direccion
+
+                JumpI VerificarColisionesConPacman
+
+
+VerificarColisionesConPacmanConEsteroide,  	HEX 000
+									        Load PosPacmanX
+									        Subt PosBlinkyX
+									        SkipCond 400
+									        Jump VerificarPinkyEsteroide
+									        Load PosPacmanY
+									        Subt PosBlinkyY
+									        SkipCond 400
+									        Jump VerificarPinkyEsteroide
+									        JnS ReiniciarBlinkyX
+
+			VerificarPinkyEsteroide,  		Load PosPacmanX
+									        Subt PosPinkyX
+									        SkipCond 400
+									        Jump VerificarInkyEsteroide
+									        Load PosPacmanY
+									        Subt PosPinkyY
+									        SkipCond 400
+									        Jump VerificarInkyEsteroide
+									        JnS ReiniciarPinkyX
+
+			VerificarInkyEsteroide,			Load PosPacmanX
+									        Subt PosInkyX
+									        SkipCond 400
+									        Jump VerificarClydeEsteroide
+									        Load PosPacmanY
+									        Subt PosInkyY
+									        SkipCond 400
+									        Jump VerificarClydeEsteroide
+									        JnS ReiniciarInkyX
+
+			VerificarClydeEsteroide, 		Load PosPacmanX
+									        Subt PosClydeX
+									        SkipCond 400
+									        Jump NoColisionEsteroide
+									        Load PosPacmanY
+									        Subt PosClydeY
+									        SkipCond 400
+									        Jump NoColisionEsteroide
+									        JnS ReiniciarClydeX
+											Jump NoColisionEsteroide
+
+NoColisionEsteroide, JumpI VerificarColisionesConPacmanConEsteroide
+
+
+ReiniciarBlinkyX, 	HEX 000
+
+				Load Vidas
+				Output
+		
+				Load Puntaje
+				Add Diez
+				Store Puntaje
+				Output
+
+				Load PosInicialBlinkyX
+                Store PosBlinkyX
+
+                Load PosInicialBlinkyY
+                Store PosBlinkyY
+				JumpI ReiniciarBlinkyX
+
+ReiniciarPinkyX, 	HEX 000
+				Load Vidas
+				Output
+
+				Load Puntaje
+				Add Diez
+				Store Puntaje
+				Output
+
+				Load PosInicialPinkyX
+                Store PosPinkyX
+
+                Load PosInicialPinkyY
+                Store PosPinkyY
+				JumpI ReiniciarPinkyX
+
+ReiniciarInkyX, 	HEX 000
+				Load Vidas
+				Output
+
+				Load Puntaje
+				Add Diez
+				Store Puntaje
+				Output
+
+				Load PosInicialInkyX
+                Store PosInkyX
+
+                Load PosInicialInkyY
+                Store PosInkyY
+				JumpI ReiniciarInkyX
+
+ReiniciarClydeX, 	HEX 000
+				Load Vidas
+				Output
+
+				Load Puntaje
+				Add Diez
+				Store Puntaje
+				Output
+
+				Load PosInicialClydeX
+                Store PosClydeX
+
+                Load PosInicialClydeY
+                Store PosClydeY
+				JumpI ReiniciarClydeX
