@@ -31,4 +31,4 @@ Este proyecto implementa una versión simplificada del clásico juego Pac-Man, d
 
 ## Autores
 
-Este proyecto fue desarrollado como trabajo final para el curso de Organización de Computadores.
+Juan José Torres, Ryan de la Torre, Jorge Almeida. Esto fue creado como proyecto final para una clase de organización de computadores.
